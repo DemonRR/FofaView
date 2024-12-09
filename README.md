@@ -5,8 +5,8 @@ FofaView 是一款基于 Python 与 PyQt6 精心打造的图形界面化 FOFA �
 ## 使用说明
 工具基于Fofa Api进行封装的，win系统下载即可直接使用无需配置任何环境。使用时需要在fofa.ini文件配置高级会员或者普通会员的 API key，普通会员需要充值F币才能使用。
 下载地址：https://github.com/DemonRR/FofaView/releases
-![image](https://github.com/user-attachments/assets/c3cd6761-1a98-4117-a822-53c85a5468a1)
-![image](https://github.com/user-attachments/assets/8e942504-8006-4faf-95b3-25a7df30d7ad)
+![image](https://github.com/user-attachments/assets/ee8de294-62e6-4a63-b943-d4a7f2ecc8d1)
+
 ## 配置文件
 fofa.ini
 ```
