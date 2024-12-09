@@ -6,9 +6,10 @@ import time
 import pandas as pd
 import requests
 from PyQt6 import uic
+from markdown2 import markdown
 from PyQt6.QtWidgets import (
     QApplication, QLabel, QLineEdit, QPushButton, QStatusBar, QMessageBox,
-    QSpinBox, QTableWidget, QTableWidgetItem
+    QSpinBox, QTableWidget, QTableWidgetItem, QTextBrowser
 )
 
 # 获取资源文件路径（支持打包后使用）
@@ -55,6 +56,25 @@ def fofa_info(key: str):
     color = 'black'
     statusbar(text, color, statusBarLabel)
 
+# 更新表格内容
+def update_table(table, result_data, field):
+    headers_list = list(field.split(','))
+    table.clearContents()
+    table.setRowCount(len(result_data))
+    table.setColumnCount(len(result_data[0]))
+    table.setHorizontalHeaderLabels(headers_list)
+    for row in range(len(result_data)):
+        for col in range(len(result_data[0])):
+            item = QTableWidgetItem(result_data[row][col])
+            table.setItem(row, col, item)
+
+# 清空表格内容
+def clear_table(table):
+    table.clearContents()
+    table.setRowCount(0)
+    table.setColumnCount(0)
+
+
 # 查询主体与显示
 def get_search(q, size, key, field, full, table: QTableWidget):
     qb = base64.b64encode(q.encode('utf-8')).decode('utf-8')
@@ -64,21 +84,11 @@ def get_search(q, size, key, field, full, table: QTableWidget):
         result_data = response.get('results')
         if result_data:
             fofa_info(key)
-            table.clearContents()
-            table.setRowCount(len(result_data))
-            table.setColumnCount(len(result_data[0]))
-            headers_list = list(field.split(','))
-            table.setHorizontalHeaderLabels(headers_list)
-            for row in range(len(result_data)):
-                for col in range(len(result_data[0])):
-                    item = QTableWidgetItem(result_data[row][col])
-                    table.setItem(row, col, item)
+            update_table(table, result_data, field)
             show_message(f'查询成功！ 共查询到{len(result_data)}数据', 'green')
-            return result_data, headers_list
+            return result_data
         else:
-            table.clearContents()
-            table.setRowCount(0)
-            table.setColumnCount(0)
+            clear_table(table)
             show_message("查询无结果！请正确填写查询条件", 'red')
             show_error_message("查询无结果！请正确填写查询条件")
             return [], []
@@ -111,6 +121,35 @@ def show_message(message, color):
     color = f'{color}'
     statusbar(message, color, messageBarLabel)
 
+def load_markdown_file(file_path):
+    try:
+        # 读取 Markdown 文件内容
+        with open(file_path, "r", encoding="utf-8") as file:
+            markdown_text = file.read()
+        # 转换为 HTML
+        html_content = markdown(markdown_text)
+        # 添加 CSS 样式
+        styled_html = f"""
+                <html>
+                <head>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 20px; }}
+                        table {{ border-collapse: collapse; width: 100%; font-size: 14px; }}
+                        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                        th {{ background-color: #f4f4f4; }}
+                        tr:nth-child(even) {{ background-color: #f9f9f9; }}
+                        pre {{ background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }}
+                        code {{ background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: "Courier New", monospace; }}
+                    </style>
+                </head>
+                <body>{html_content}</body>
+                </html>
+                """
+        textBrowser.setHtml(styled_html)
+    except Exception as e:
+        textBrowser.setText(f"无法加载文件:\n{e}")
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = uic.loadUi(resource_path("fofaView.ui"))
@@ -125,9 +164,11 @@ if __name__ == '__main__':
     myStatusBar: QStatusBar = ui.statusBar
     sizeSpinBox: QSpinBox = ui.spinBox
     searchTableWidget: QTableWidget = ui.tableWidget
+    textBrowser: QTextBrowser = ui.textBrowser
 
     # 加载配置
     fofa_key, fields, full = load_config()
+    load_markdown_file(resource_path("README.md"))
 
     if check_status(fofa_key):
         fofa_info(fofa_key)
