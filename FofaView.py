@@ -6,6 +6,8 @@ import time
 import pandas as pd
 import requests
 from PyQt6 import uic
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
 from markdown2 import markdown
 from PyQt6.QtWidgets import (
     QApplication, QLabel, QLineEdit, QPushButton, QStatusBar, QMessageBox,
@@ -52,9 +54,10 @@ def statusbar(text, color, label: QLabel):
 def fofa_info(key: str):
     url = f'https://fofa.info/api/v1/info/my?key={key}'
     response = requests.get(url).json()
-    text = f'用户名：{response["username"]}    VIP状态：{response["isvip"]}    VIP等级：{response.get("vip_level")}'
+    text = f'用户名：{response["username"]}    VIP状态：{response.get("isvip")}    F点剩余：{response.get("fofa_point")}'
     color = 'black'
     statusbar(text, color, statusBarLabel)
+    return response.get("isvip"), response.get("fofa_point")
 
 # 更新表格内容
 def update_table(table, result_data, field):
@@ -150,6 +153,34 @@ def load_markdown_file(file_path):
         textBrowser.setText(f"无法加载文件:\n{e}")
 
 
+def get_latest_version():
+    url = f"https://api.github.com/repos/DemonRR/FofaView/releases/latest"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            release_info = response.json()
+            return release_info["tag_name"]
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Error occurred: {e}")
+        return None
+
+
+def show_update_prompt():
+    msg_box = QMessageBox()
+    msg_box.setWindowTitle("版本更新")
+    msg_box.setText("有新版本可升级")
+    ok_button = msg_box.addButton("确定", QMessageBox.ButtonRole.AcceptRole)
+    cancel_button = msg_box.addButton("取消", QMessageBox.ButtonRole.RejectRole)
+    result = msg_box.exec()
+    if msg_box.clickedButton() == ok_button:
+        github_link = "https://github.com/DemonRR/FofaView/releases"
+        url = QUrl(github_link)
+        QDesktopServices.openUrl(url)
+        sys.exit(0)
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ui = uic.loadUi(resource_path("fofaView.ui"))
@@ -170,16 +201,30 @@ if __name__ == '__main__':
     fofa_key, fields, full = load_config()
     load_markdown_file(resource_path("README.md"))
 
-    if check_status(fofa_key):
-        fofa_info(fofa_key)
-        searchPushButton.clicked.connect(lambda: get_search(searchLineEdit.text(), sizeSpinBox.value(), fofa_key, fields, full, searchTableWidget))
-        outputPushButton.clicked.connect(lambda: save_excel(
-            [
-                [searchTableWidget.item(row, col).text() for col in range(searchTableWidget.columnCount())] for row in range(searchTableWidget.rowCount())
-            ],
-            [searchTableWidget.horizontalHeaderItem(col).text() for col in range(searchTableWidget.columnCount())]
-        ))
+
+    current_version = "1.0.2"
+    latest_version = get_latest_version()
+    if latest_version and latest_version > current_version:
+        show_update_prompt()
     else:
-        show_message('请检测配置文件是否填写正确！', 'red')
-    ui.show()
-    sys.exit(app.exec())
+        if check_status(fofa_key):
+            isvip, fofa_point = fofa_info(fofa_key)
+            if not isvip and fofa_point == 0:
+                show_message("你是普通会员且F点属于量为0,无法查询", "red")
+            else:
+                fofa_info(fofa_key)
+                searchPushButton.clicked.connect(
+                    lambda: get_search(searchLineEdit.text(), sizeSpinBox.value(), fofa_key, fields, full,
+                                       searchTableWidget))
+                outputPushButton.clicked.connect(lambda: save_excel(
+                    [
+                        [searchTableWidget.item(row, col).text() for col in range(searchTableWidget.columnCount())] for row
+                        in range(searchTableWidget.rowCount())
+                    ],
+                    [searchTableWidget.horizontalHeaderItem(col).text() for col in range(searchTableWidget.columnCount())]
+                ))
+        else:
+            show_message('请检测配置文件是否填写正确！', 'red')
+        ui.show()
+        sys.exit(app.exec())
+

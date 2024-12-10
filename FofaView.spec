@@ -5,7 +5,7 @@ a = Analysis(
     ['FofaView.py'],
     pathex=[],
     binaries=[],
-    datas=[('fofaView.ui', '.'), ('icon.ico', '.')],
+    datas=[('fofaView.ui', '.'), ('icon.ico', '.'), ('README.md', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
