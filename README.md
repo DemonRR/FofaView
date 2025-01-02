@@ -15,14 +15,8 @@ FofaView 是一款基于 Python、PyQt6、QFluentWidgets精心打造的图形界
 工具基于Fofa Api进行封装的，win系统下载即可直接使用无需配置任何环境。使用时需要在配置菜单中配置高级会员或者普通会员的 API key，普通会员需要充值F币才能使用。配置修复保存完之后会在当前目录生成一个config目录用于存储配置信息
 下载地址：https://github.com/DemonRR/FofaView/releases
 
-## 主页面
-![image](https://github.com/user-attachments/assets/01ff7fb9-8f23-43fd-91e0-bd0f0f648142)
-![image](https://github.com/user-attachments/assets/522cef71-9abd-47c7-8663-4d5bfdae04ab)
+## 展示
+![brkef-17h8q](https://github.com/user-attachments/assets/eb9f2c86-980d-49c1-8684-1181123c8446)
 
-
-
-## 配置页面
-![image](https://github.com/user-attachments/assets/db542f97-ee50-4115-993c-a7e096a48e10)
-![image](https://github.com/user-attachments/assets/1c44f8b9-1a0a-4826-893d-7a6330b2363a)
 
 
