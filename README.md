@@ -17,7 +17,7 @@ FofaView 是一款基于 Python、PyQt6、QFluentWidgets精心打造的图形界
 下载地址：https://github.com/DemonRR/FofaView/releases
 
 ## 展示
-![brkef-17h8q](https://github.com/user-attachments/assets/eb9f2c86-980d-49c1-8684-1181123c8446)
+![brkef-17h8q](images/399600490-eb9f2c86-980d-49c1-8684-1181123c8446.gif)
 
 
 
