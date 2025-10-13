@@ -1,0 +1,11 @@
+QDialog {
+    background-color: rgb(39, 39, 39); /* 设置背景颜色，可以根据需要修改 */
+}
+
+QDialog::title {
+    color: rgb(39, 39, 39); /* 标题栏文字颜色 */
+    background-color: rgb(39, 39, 39); /* 标题栏背景颜色 */
+}
+
+
+

@@ -1,0 +1,5 @@
+QDialog {
+    background-color: rgb(234, 234, 234); /* 设置背景颜色，可以根据需要修改 */
+}
+
+
